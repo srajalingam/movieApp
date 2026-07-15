@@ -23,6 +23,7 @@ func main() {
 	app.Domain = "example.com"
 
 	log.Println("application running", port)
+	http.HandleFunc("/", Hello)
 
 	//start a web server
 
