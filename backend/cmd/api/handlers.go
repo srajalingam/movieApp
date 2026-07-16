@@ -4,6 +4,7 @@ import (
 	"backend/internal/models"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -15,6 +16,8 @@ type home struct {
 }
 
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Home handler fired for %s", r.URL.Path)
+
 	var payload = &home{
 		Status:  "active",
 		Message: "Go movies up and running",
@@ -31,6 +34,8 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
+	log.Printf("AllMovies handler fired for %s", r.URL.Path)
+
 	var movies []models.Movie
 
 	rd, _ := time.Parse("2006-01-02", "1986-03-07")
