@@ -60,7 +60,7 @@ func main() {
 		RefreshExpiry: time.Hour * 24,
 		CookiePath:    "/",
 		CookieName:    "__Host-refresh_token",
-		CookieDomain:  app.CookieDomain,
+		// CookieDomain:  app.CookieDomain,
 	}
 
 	log.Println("application running", port)
