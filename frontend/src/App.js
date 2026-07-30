@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import Alert from "./components/Alert";
 
@@ -7,6 +7,8 @@ function App() {
   const [jwtToken,setJwtToken]=useState("");
   const [alertMessage,setAlertMessage]=useState("");
   const [alertClassName,setAlertClassName]=useState("d-none")
+
+  const [tickInterval,setTickInterval]=useState()
 
   const navigate=useNavigate()
 
@@ -21,13 +23,14 @@ function App() {
       })
       .finally(()=>{
         setJwtToken("")
+        toggleRefresh(false)
       })
     navigate("/login")
   }
 
-  useEffect(()=>{
-    if(jwtToken ===""){
-      const requestOptions={
+  
+  const makeRefreshToken=useCallback(()=>{
+    const requestOptions={
         method:"GET",
         credentials:"include"
       }
@@ -36,13 +39,39 @@ function App() {
         .then((data)=>{
           if (data.access_token){
             setJwtToken(data.access_token)
+            toggleRefresh(true)
           }
         })
         .catch(error=>{
           console.log("user is not logged in ",error)
-        })
+    })
+  },[])
+  
+  const toggleRefresh=useCallback((status)=>{
+    console.log("clicked")
+    if(status){
+      console.log("turning on ticking")
+      let i =setInterval(()=>{
+        console.log("this will run every second")
+        makeRefreshToken()
+      },60*1000)
+      setTickInterval(i);
+      console.log("setting tick interval to",i)
+    }else{
+      console.log("turning off ticking")
+      console.log("turning off tick interval",tickInterval);
+      setTickInterval(null)
+      clearInterval(tickInterval)
     }
-  },[jwtToken])
+  },[tickInterval,makeRefreshToken])
+
+  useEffect(()=>{
+    if(jwtToken ===""){
+      makeRefreshToken()
+    }
+  },[])
+
+
 
   return (
     <div className="container">
@@ -85,7 +114,8 @@ function App() {
             jwtToken,
             setJwtToken,
             setAlertClassName,
-            setAlertMessage
+            setAlertMessage,
+            toggleRefresh
           }}
           
           />
