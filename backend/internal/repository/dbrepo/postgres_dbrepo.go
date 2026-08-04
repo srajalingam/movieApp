@@ -150,7 +150,7 @@ func (m *PostgresDBRepo) OneMovie(id int) (*models.Movie, error) {
 		select 
 			g.id, g.genre
 		from 
-			movie_genres mg
+			movies_genres mg
 		left join 
 			genres g on (g.id = mg.genre_id)
 		where 
@@ -217,7 +217,7 @@ func (m *PostgresDBRepo) OneMovieForEdit(id int) (*models.Movie, []*models.Genre
 		select 
 			g.id, g.genre
 		from 
-			movie_genres mg
+			movies_genres mg
 		left join 
 			genres g on (g.id = mg.genre_id)
 		where 
