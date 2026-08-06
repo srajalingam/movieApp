@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v4"
@@ -201,4 +202,36 @@ func (app *application) AllGenres(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_ = app.writeJSON(w, http.StatusOK, genres)
+}
+
+func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
+	var movie models.Movie
+
+	err := app.readJSON(w, r, &movie)
+	if err != nil {
+		app.errorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	movie.CreatedAt = time.Now()
+	movie.UpdatedAt = time.Now()
+
+	newID, err := app.DB.InsertMovie(&movie)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.DB.UpdateMovieGenres(newID, movie.GenresArray)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: fmt.Sprintf("Movie %s inserted successfully", movie.Title),
+	}
+
+	app.writeJSON(w, http.StatusAccepted, resp)
 }

@@ -74,6 +74,38 @@ const EditMovie = () => {
     }, [jwtToken, navigate, id])
     const handleSubmit = (e) => {
         e.preventDefault()
+
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+
+        let method = "PUT"
+        if (movie.id > 0) {
+            method = "PUT"
+        }
+
+        const requestBody =movie
+
+        requestBody.release_date= new Date(requestBody.release_date)
+        requestBody.runtime= parseInt(requestBody.runtime)
+
+        const requestOptions = {
+            method: method,
+            headers: headers,
+            body: JSON.stringify(requestBody),
+        }
+
+        fetch(`http://localhost:8080/admin/movies/${movie.id}`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.errors) {
+                    setErrors(data.errors)
+                }else {
+                    navigate('/manage-catalogue')
+                }
+            }).catch((err) => {
+                console.log(err)
+            })
     }
     const handleChange = () => (event) => {
         const name = event.target.name
@@ -110,7 +142,7 @@ const EditMovie = () => {
        <div>
             <h2>Add / Edit Movie</h2>
             <hr/>
-            <pre>{JSON.stringify(movie, null, 3)}</pre>
+            {/* <pre>{JSON.stringify(movie, null, 3)}</pre> */}
             <form onSubmit={handleSubmit}>
                 <input type="hidden" name="id" value={movie.id} id="id" />
                 
@@ -186,6 +218,7 @@ const EditMovie = () => {
                         }
                     </>
                 }
+                <button className="btn btn-primary" type="submit">Save</button>
             </form>
         </div>
     )
