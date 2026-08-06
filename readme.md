@@ -10,6 +10,8 @@ Backend
 
     go get -u github.com/golang-jwt/jwt/v5
 
+    go get github.com/graphql-go/graphql  
+
     
 
 
